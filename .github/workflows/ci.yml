@@ -3,7 +3,7 @@ name: CI
 on:
   pull_request:
   push:
-    branches: [ main ]
+    branches: [ master ]
 
 jobs:
   scan_ruby:
@@ -63,8 +63,13 @@ jobs:
     #      - 6379:6379
     #    options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
+      # No google-chrome-stable here on purpose. The runner image already ships
+      # Chrome with the chromedriver that matches it; installing the apt package
+      # upgrades Chrome past that driver and leaves Selenium driving a browser a
+      # major version ahead of it, which drops clicks and typing rather than
+      # failing outright.
       - name: Install packages
-        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y build-essential git libyaml-dev pkg-config google-chrome-stable
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y build-essential git libyaml-dev pkg-config
 
       - name: Checkout code
         uses: actions/checkout@v6
@@ -88,3 +93,79 @@ jobs:
           name: screenshots
           path: ${{ github.workspace }}/tmp/screenshots
           if-no-files-found: ignore
+
+  notify:
+    needs: [ scan_ruby, scan_js, lint, test ]
+    if: always()
+    runs-on: ubuntu-latest
+
+    # Read-only, and only what looking up the commit's pull request needs.
+    permissions:
+      contents: read
+      pull-requests: read
+
+    steps:
+      - name: Tell Slack
+        env:
+          WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+          CHECKS: ${{ needs.scan_ruby.result }},${{ needs.scan_js.result }},${{ needs.lint.result }},${{ needs.test.result }}
+          SUBJECT: ${{ github.event.head_commit.message || github.event.pull_request.title }}
+          ACTOR: ${{ github.actor }}
+          WORKFLOW: ${{ github.workflow }}
+          SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          REPO_URL: ${{ github.server_url }}/${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          if [ -z "$WEBHOOK" ]; then
+            echo "No SLACK_WEBHOOK_URL secret set - nothing to notify." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          # A merge commit on master carries no pull_request payload, so the PR
+          # is looked up from the commit. Failing that, the line is left out
+          # rather than pointing at nothing.
+          if [ -z "$PR_URL" ]; then
+            PR_URL=$(gh api "repos/$GH_REPO/commits/$SHA/pulls" --jq '.[0].html_url' 2>/dev/null || true)
+          fi
+
+          if printf '%s' "$CHECKS" | grep -q failure; then
+            icon=":x:"; colour="#c0392b"; status="CI failed"
+          else
+            icon=":white_check_mark:"; colour="#2eb886"; status="CI passed"
+          fi
+
+          # jq builds the JSON, so a quote or backtick in a commit message cannot
+          # break the payload. The top-level "text" and the attachment's
+          # "fallback" are what Slack shows in a push or desktop notification -
+          # without them the preview is blank, since the body is all Block Kit.
+          jq -n \
+            --arg subject "$(printf '%s' "$SUBJECT" | head -1)" \
+            --arg actor "$ACTOR" \
+            --arg icon "$icon" \
+            --arg colour "$colour" \
+            --arg workflow "$WORKFLOW" \
+            --arg run_url "$RUN_URL" \
+            --arg pr_url "$PR_URL" \
+            --arg commit "${SHA:0:7}" \
+            --arg commit_url "$REPO_URL/commit/$SHA" \
+            --arg status "$status" \
+            '($icon + " " + $status
+              + (if $subject == "" then "" else ": " + $subject end)) as $summary
+             | [
+               ":bust_in_silhouette: *" + $actor + "*",
+               $subject,
+               $icon + " Run: <" + $run_url + "|" + $workflow + ">"
+             ]
+             + (if $pr_url == "" then [] else [ "Pull Request: " + $pr_url ] end)
+             + [ "Commit: <" + $commit_url + "|" + $commit + ">" ]
+             | { text: $summary, attachments: [ {
+                 color: $colour,
+                 fallback: $summary,
+                 blocks: [ { type: "section", text: { type: "mrkdwn", text: join("\n") } } ]
+               } ] }' \
+            | curl -sS -X POST -H 'Content-type: application/json' --data @- "$WEBHOOK" > /dev/null
+
+          echo "Posted to Slack." >> "$GITHUB_STEP_SUMMARY"

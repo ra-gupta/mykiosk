@@ -1,0 +1,34 @@
+<div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+  <h1 class="text-2xl font-bold tracking-tight">Shelf</h1>
+  <div class="flex gap-2">
+    <%= link_to "Incoming orders", owner_orders_path, class: "btn-quiet" %>
+    <%= link_to "Add an item", new_owner_product_path, class: "btn" %>
+  </div>
+</div>
+
+<div class="card divide-y divide-slate-100">
+  <% @products.each do |product| %>
+    <div class="flex flex-wrap items-center gap-4 p-4" data-product="<%= product.name %>">
+      <div class="h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-slate-50">
+        <%= render "products/photo", product: product, classes: "h-14 w-14" %>
+      </div>
+
+      <div class="min-w-40 flex-1">
+        <p class="font-semibold"><%= product.name %></p>
+        <p class="text-xs text-slate-500"><%= product.unit %> · <%= rupees(product.price) %></p>
+      </div>
+
+      <p class="w-24 text-sm <%= product.stock.zero? ? "font-semibold text-red-600" : "text-slate-600" %>">
+        <%= product.stock.zero? ? "Out of stock" : "#{product.stock} left" %>
+      </p>
+
+      <div class="flex w-56 justify-end gap-2">
+        <% if product.stock.positive? %>
+          <%= button_to "Out of stock", owner_product_path(product, product: { stock: 0 }), method: :patch,
+                class: "btn-quiet" %>
+        <% end %>
+        <%= link_to "Edit", edit_owner_product_path(product), class: "btn" %>
+      </div>
+    </div>
+  <% end %>
+</div>

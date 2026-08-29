@@ -1,0 +1,8 @@
+<% classes = local_assigns.fetch(:classes, "h-44 w-full") %>
+<% if product.photo.attached? %>
+  <%= image_tag product.photo, alt: product.name, loading: "lazy", class: "#{classes} object-cover" %>
+<% elsif product.image.present? %>
+  <%= image_tag product.image, alt: product.name, loading: "lazy", class: "#{classes} object-cover" %>
+<% else %>
+  <div class="<%= classes %> flex items-center justify-center text-5xl"><%= product.emoji %></div>
+<% end %>

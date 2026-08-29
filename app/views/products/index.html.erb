@@ -1,21 +1,74 @@
-<h1>Fresh vegetables</h1>
+<div class="mb-6 flex flex-wrap items-end justify-between gap-4">
+  <div>
+    <h1 class="text-2xl font-bold tracking-tight">Fresh from the kiosk</h1>
+    <p class="text-sm text-slate-500">Hand-picked this morning · delivered in 30 minutes</p>
+  </div>
 
-<%= form_with url: root_path, method: :get, class: "search" do |form| %>
-  <%= form.search_field :q, value: params[:q], placeholder: "Search vegetables…" %>
-  <%= form.submit "Search" %>
-<% end %>
+  <%= form_with url: root_path, method: :get, class: "flex gap-2" do |form| %>
+    <%= form.search_field :q, value: params[:q], placeholder: "Search vegetables and fruits…", class: "field w-64" %>
+    <%= form.submit "Search", class: "btn" %>
+  <% end %>
+</div>
 
-<div class="grid">
+<div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
   <% @products.each do |product| %>
-    <div class="card">
-      <h3><%= product.name %></h3>
-      <p class="price"><%= rupees(product.price) %> <small>/ <%= product.unit %></small></p>
+    <div class="card flex flex-col overflow-hidden transition hover:shadow-md" data-product="<%= product.name %>">
+      <div class="relative bg-slate-50">
+        <% if product.discount_percentage %>
+          <span class="absolute left-0 top-3 rounded-r-md bg-blue-600 px-2 py-1 text-xs font-bold leading-tight text-white">
+            <%= product.discount_percentage %>%<br>OFF
+          </span>
+        <% end %>
+        <%= render "products/photo", product: product, classes: "aspect-square w-full" %>
+      </div>
 
-      <% if product.stock.zero? %>
-        <p class="out">Out of stock</p>
-      <% else %>
-        <%= render "carts/quantity", product: product %>
-      <% end %>
+      <div class="flex flex-1 flex-col p-4">
+        <p class="mb-2 flex items-center gap-1 text-xs font-semibold text-amber-600">⏱ 30 MINS</p>
+        <h3 class="font-semibold leading-snug"><%= product.name %></h3>
+        <p class="text-sm text-slate-500"><%= product.unit %></p>
+
+        <div class="mt-4 flex items-end justify-between gap-3">
+          <div>
+            <p class="text-lg font-bold"><%= rupees(product.price) %></p>
+            <% if product.discount_percentage %>
+              <p class="text-sm text-slate-400 line-through"><%= rupees(product.mrp) %></p>
+            <% end %>
+          </div>
+
+          <div class="w-28">
+            <% if product.stock.zero? %>
+              <p class="rounded-xl bg-slate-100 py-2 text-center text-xs font-semibold text-slate-500">Out of stock</p>
+            <% else %>
+              <%= render "carts/stepper", product: product %>
+            <% end %>
+          </div>
+        </div>
+      </div>
     </div>
   <% end %>
 </div>
+
+<% if @products.empty? %>
+  <div class="card p-12 text-center">
+    <p class="text-5xl">🧺</p>
+    <p class="mt-3 text-slate-500">Nothing matches “<%= params[:q] %>”.</p>
+    <p class="mt-4"><%= link_to "See everything", root_path, class: "btn" %></p>
+  </div>
+<% end %>
+
+<section class="mt-12">
+  <h2 class="mb-5 text-center text-xl font-bold tracking-tight">Why shop at the kiosk</h2>
+  <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <% [
+      [ "🧑‍🌾", "bg-emerald-50", "We hand-pick the freshest fruits and vegetables every morning" ],
+      [ "🔍", "bg-amber-50", "Every crate clears a two stage quality check before it reaches the shelf" ],
+      [ "🛵", "bg-sky-50", "We deliver it fresh to your door the same day, every day" ],
+      [ "🧺", "bg-lime-50", "Packed in reusable crates and paper bags to keep it fresh and plastic free" ]
+    ].each do |emoji, tint, copy| %>
+      <div class="card p-5">
+        <div class="mb-3 flex h-12 w-12 items-center justify-center rounded-xl <%= tint %> text-2xl"><%= emoji %></div>
+        <p class="text-sm text-slate-600"><%= copy %></p>
+      </div>
+    <% end %>
+  </div>
+</section>

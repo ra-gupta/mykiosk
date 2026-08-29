@@ -1,21 +1,58 @@
-<h1>Sign in</h1>
+<div class="mx-auto max-w-md">
+  <% if @otp_phone %>
+    <h1 class="mb-1 text-2xl font-bold tracking-tight">Enter the code</h1>
+    <p class="mb-6 text-sm text-slate-500">
+      Sent to <span class="font-semibold text-slate-900"><%= @otp_phone %></span> · expires in 5 minutes.
+    </p>
 
-<h2>With your mobile number</h2>
-<%= form_with url: phone_verification_path do |form| %>
-  <%= form.telephone_field :phone_number, required: true, autofocus: true, autocomplete: "tel",
-        inputmode: "numeric", placeholder: "10 digit mobile number" %><br>
-  <%= form.submit "Send OTP" %>
-<% end %>
-<p><small>New here? The code signs you up as well.</small></p>
+    <%= form_with url: session_path, class: "card space-y-4 p-6" do |form| %>
+      <%= form.hidden_field :phone_number, value: @otp_phone %>
+      <div>
+        <%= form.label :code, "6 digit code", class: "label" %>
+        <%= form.text_field :code, required: true, autofocus: true, autocomplete: "one-time-code",
+              inputmode: "numeric", pattern: "[0-9]{6}", placeholder: "••••••",
+              class: "field text-center text-lg tracking-[0.5em]" %>
+      </div>
+      <%= form.submit "Verify and continue", class: "btn w-full" %>
+    <% end %>
 
-<h2>With your email</h2>
-<%= form_with url: session_path do |form| %>
-  <%= form.email_field :email_address, required: true, autocomplete: "username", placeholder: "Email address", value: params[:email_address] %><br>
-  <%= form.password_field :password, required: true, autocomplete: "current-password", placeholder: "Password", maxlength: 72 %><br>
-  <%= form.submit "Sign in" %>
-<% end %>
+    <%= button_to "Send a new code", phone_verification_path, params: { phone_number: @otp_phone },
+          class: "btn-quiet mx-auto mt-3" %>
+  <% else %>
+    <h1 class="mb-6 text-center text-2xl font-bold tracking-tight">Sign in</h1>
 
-<p>
-  <%= link_to "Create an account", new_registration_path %> ·
-  <%= link_to "Forgot password?", new_password_path %>
-</p>
+    <%= form_with url: phone_verification_path, class: "card space-y-4 p-6" do |form| %>
+      <div>
+        <%= form.label :phone_number, "Mobile number", class: "label" %>
+        <%= form.telephone_field :phone_number, required: true, autofocus: true, autocomplete: "tel",
+              inputmode: "numeric", placeholder: "10 digit mobile number", class: "field" %>
+      </div>
+      <%= form.submit "Send OTP", class: "btn w-full" %>
+      <p class="text-center text-xs text-slate-500">New here? The code signs you up too.</p>
+    <% end %>
+
+    <div class="my-6 flex items-center gap-3 text-xs font-semibold uppercase tracking-widest text-slate-400">
+      <span class="h-px flex-1 bg-slate-200"></span> or <span class="h-px flex-1 bg-slate-200"></span>
+    </div>
+
+    <%= form_with url: session_path, class: "card space-y-4 p-6" do |form| %>
+      <div>
+        <%= form.label :email_address, "Email address", class: "label" %>
+        <%= form.email_field :email_address, required: true, autocomplete: "username",
+              value: params[:email_address], class: "field" %>
+      </div>
+      <div>
+        <%= form.label :password, "Password", class: "label" %>
+        <%= form.password_field :password, required: true, autocomplete: "current-password",
+              maxlength: 72, class: "field" %>
+      </div>
+      <%= form.submit "Sign in", class: "btn w-full" %>
+    <% end %>
+
+    <p class="mt-4 text-center text-sm text-slate-500">
+      <%= link_to "Create an account", new_registration_path, class: "font-medium text-emerald-700 hover:underline" %>
+      ·
+      <%= link_to "Forgot password?", new_password_path, class: "font-medium text-emerald-700 hover:underline" %>
+    </p>
+  <% end %>
+</div>
