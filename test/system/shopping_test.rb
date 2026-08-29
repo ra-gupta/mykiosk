@@ -14,7 +14,7 @@ class ShoppingTest < ApplicationSystemTestCase
 
     within(".card", text: "Tomato") { click_on "Add" }
     within(".card", text: "Tomato") { click_on "+" }
-    click_on "Cart"
+    within(".site-header") { click_on "Cart" }
     shot "02-cart"
 
     click_on "Checkout"
@@ -26,7 +26,7 @@ class ShoppingTest < ApplicationSystemTestCase
     fill_in "code", with: User.start_phone_verification("9876543210").otp
     click_on "Verify and continue"
 
-    click_on "Cart"
+    within(".site-header") { click_on "Cart" }
     click_on "Checkout"
     fill_in "address", with: "12 Market Road, Bengaluru"
     shot "05-checkout"

@@ -11,7 +11,9 @@
   --danger-soft: #fdecea;
   --radius: 16px;
   --shadow: 0 1px 2px rgba(20, 38, 28, .06), 0 8px 24px rgba(20, 38, 28, .05);
-  --font: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  /* No web font on purpose: a late-loading one reflows the header mid-click and
+     makes system tests miss links. Every target OS ships a good UI face. */
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
 }
 
 * { box-sizing: border-box; }
