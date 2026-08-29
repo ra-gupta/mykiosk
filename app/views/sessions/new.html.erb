@@ -1,0 +1,21 @@
+<h1>Sign in</h1>
+
+<h2>With your mobile number</h2>
+<%= form_with url: phone_verification_path do |form| %>
+  <%= form.telephone_field :phone_number, required: true, autofocus: true, autocomplete: "tel",
+        inputmode: "numeric", placeholder: "10 digit mobile number" %><br>
+  <%= form.submit "Send OTP" %>
+<% end %>
+<p><small>New here? The code signs you up as well.</small></p>
+
+<h2>With your email</h2>
+<%= form_with url: session_path do |form| %>
+  <%= form.email_field :email_address, required: true, autocomplete: "username", placeholder: "Email address", value: params[:email_address] %><br>
+  <%= form.password_field :password, required: true, autocomplete: "current-password", placeholder: "Password", maxlength: 72 %><br>
+  <%= form.submit "Sign in" %>
+<% end %>
+
+<p>
+  <%= link_to "Create an account", new_registration_path %> ·
+  <%= link_to "Forgot password?", new_password_path %>
+</p>

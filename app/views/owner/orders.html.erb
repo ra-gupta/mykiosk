@@ -1,0 +1,7 @@
+<h1>Incoming orders</h1>
+<p><small>This page updates live — new orders appear at the top.</small></p>
+
+<%= turbo_stream_from "incoming_orders" %>
+<div id="incoming_orders" class="grid">
+  <%= render @orders %>
+</div>

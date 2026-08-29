@@ -1,0 +1,23 @@
+<h1>Your cart</h1>
+
+<% products = Product.where(id: cart.keys) %>
+<% if products.empty? %>
+  <p>Nothing here yet. <%= link_to "Browse vegetables", root_path %></p>
+<% else %>
+  <table>
+    <% total = 0 %>
+    <% products.each do |product| %>
+      <% quantity = cart[product.id.to_s].to_i %>
+      <% total += product.price * quantity %>
+      <tr>
+        <td><%= product.name %><br><small><%= rupees(product.price) %> / <%= product.unit %></small></td>
+        <td><%= render "carts/quantity", product: product %></td>
+        <td><%= rupees(product.price * quantity) %></td>
+      </tr>
+    <% end %>
+    <tr><th>Total</th><th></th><th><%= rupees(total) %></th></tr>
+  </table>
+
+  <%= link_to "Checkout", new_order_path, class: "button" %>
+  <%= button_to "Empty cart", cart_path, method: :delete %>
+<% end %>

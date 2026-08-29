@@ -1,0 +1,16 @@
+<h1>Order #<%= @order.id %></h1>
+<p><%= @order.status.humanize %> · <%= @order.created_at.to_fs(:long) %></p>
+
+<table>
+  <% @order.order_items.includes(:product).each do |item| %>
+    <tr>
+      <td><%= item.product.name %></td>
+      <td>× <%= item.quantity %></td>
+      <td><%= rupees(item.subtotal) %></td>
+    </tr>
+  <% end %>
+  <tr><th>Total</th><th></th><th><%= rupees(@order.total) %></th></tr>
+</table>
+
+<p>Delivering to: <%= @order.address %></p>
+<%= link_to "All orders", orders_path %>

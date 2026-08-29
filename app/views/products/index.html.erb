@@ -1,0 +1,21 @@
+<h1>Fresh vegetables</h1>
+
+<%= form_with url: root_path, method: :get, class: "search" do |form| %>
+  <%= form.search_field :q, value: params[:q], placeholder: "Search vegetables…" %>
+  <%= form.submit "Search" %>
+<% end %>
+
+<div class="grid">
+  <% @products.each do |product| %>
+    <div class="card">
+      <h3><%= product.name %></h3>
+      <p class="price"><%= rupees(product.price) %> <small>/ <%= product.unit %></small></p>
+
+      <% if product.stock.zero? %>
+        <p class="out">Out of stock</p>
+      <% else %>
+        <%= render "carts/quantity", product: product %>
+      <% end %>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,38 @@
+/*
+ * This is a manifest file that'll be compiled into application.css.
+ *
+ * With Propshaft, assets are served efficiently without preprocessing steps. You can still include
+ * application-wide styles in this file, but keep in mind that CSS precedence will follow the standard
+ * cascading order, meaning styles declared later in the document or manifest will override earlier ones,
+ * depending on specificity.
+ *
+ * Consider organizing styles into separate files for maintainability.
+ */
+
+:root { --green: #1f8b4c; --ink: #1c1c1c; --line: #e3e3e3; }
+* { box-sizing: border-box; }
+body { margin: 0; font-family: system-ui, sans-serif; color: var(--ink); }
+header { display: flex; gap: 1rem; align-items: center; justify-content: space-between;
+         padding: .75rem 1rem; border-bottom: 1px solid var(--line); }
+header nav { display: flex; gap: .75rem; align-items: center; }
+.brand { font-weight: 700; font-size: 1.2rem; text-decoration: none; color: var(--green); }
+main { max-width: 900px; margin: 0 auto; padding: 1rem; }
+a { color: var(--green); }
+.grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+.card { border: 1px solid var(--line); border-radius: 12px; padding: 1rem; }
+.card h3 { margin: 0 0 .25rem; font-size: 1rem; }
+.price { margin: 0 0 .75rem; font-weight: 600; }
+.out { color: #999; margin: 0; }
+.qty { display: flex; gap: .5rem; align-items: center; }
+.qty form { margin: 0; }
+button, .button, input[type=submit] { background: var(--green); color: #fff; border: 0;
+  border-radius: 8px; padding: .45rem .8rem; font: inherit; cursor: pointer; text-decoration: none; }
+button[disabled] { opacity: .4; cursor: not-allowed; }
+table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; }
+td, th { text-align: left; padding: .6rem 0; border-bottom: 1px solid var(--line); }
+.flash { padding: .6rem .8rem; border-radius: 8px; }
+.alert { background: #fdecea; color: #a4231d; }
+.notice { background: #eaf6ee; color: #14622f; }
+input[type=text], input[type=email], input[type=password], input[type=search], textarea {
+  padding: .5rem; border: 1px solid var(--line); border-radius: 8px; font: inherit; width: 100%; max-width: 340px; }
+.search { display: flex; gap: .5rem; margin: 1rem 0; }

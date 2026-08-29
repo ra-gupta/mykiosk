@@ -1,0 +1,14 @@
+<h1>Your orders</h1>
+
+<% if @orders.empty? %>
+  <p>No orders yet. <%= link_to "Start shopping", root_path %></p>
+<% end %>
+
+<% @orders.each do |order| %>
+  <p>
+    <%= link_to "Order ##{order.id}", order %> —
+    <%= order.created_at.to_fs(:long) %> —
+    <%= rupees(order.total) %> —
+    <%= order.status.humanize %>
+  </p>
+<% end %>
