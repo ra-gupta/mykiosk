@@ -8,6 +8,8 @@ class User < ApplicationRecord
   has_many :orders, dependent: :destroy
   has_many :device_tokens, dependent: :destroy
 
+  scope :owners_with_phone, -> { where(owner: true).where.not(phone_number: nil) }
+
   normalizes :email_address, with: ->(e) { e.strip.downcase }
   normalizes :phone_number, with: ->(p) { p.gsub(/\D/, "").last(10) }
 
@@ -44,8 +46,7 @@ class User < ApplicationRecord
   end
 
   def deliver_otp
-    # ponytail: no SMS gateway wired up, the code goes to the log. Post it to Twilio/MSG91 here.
-    Rails.logger.info("[OTP] #{phone_number} -> #{otp}")
+    SmsJob.perform_later(phone_number, "#{otp} is your MyKiosk code. It expires in 5 minutes.")
   end
 
   def display_name = email_address.presence || phone_number

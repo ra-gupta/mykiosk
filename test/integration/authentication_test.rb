@@ -2,7 +2,9 @@ require "test_helper"
 
 class AuthenticationTest < ActionDispatch::IntegrationTest
   test "signing up and back in with a mobile number and OTP" do
-    post phone_verification_path, params: { phone_number: "98765 43210" }
+    assert_enqueued_with(job: SmsJob) do
+      post phone_verification_path, params: { phone_number: "98765 43210" }
+    end
     user = User.sole
     assert_equal "9876543210", user.phone_number
     assert_redirected_to new_session_path
