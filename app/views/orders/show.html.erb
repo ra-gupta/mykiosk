@@ -7,11 +7,11 @@
 <div class="grid gap-6 lg:grid-cols-3">
   <div class="card divide-y divide-slate-100 lg:col-span-2">
     <% @order.order_items.includes(:product).each do |item| %>
-      <div class="flex items-center gap-4 p-4">
+      <div class="flex flex-wrap items-center gap-3 p-4 sm:gap-4">
         <div class="h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-slate-50">
           <%= render "products/photo", product: item.product, classes: "h-14 w-14" %>
         </div>
-        <div class="flex-1">
+        <div class="min-w-32 flex-1">
           <p class="font-semibold"><%= item.product.name %></p>
           <p class="text-xs text-slate-500"><%= rupees(item.price) %> × <%= item.quantity %></p>
         </div>

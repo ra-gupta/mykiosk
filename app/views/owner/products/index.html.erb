@@ -8,7 +8,7 @@
 
 <div class="card divide-y divide-slate-100">
   <% @products.each do |product| %>
-    <div class="flex flex-wrap items-center gap-4 p-4" data-product="<%= product.name %>">
+    <div class="flex flex-wrap items-center gap-3 p-4 sm:gap-4" data-product="<%= product.name %>">
       <div class="h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-slate-50">
         <%= render "products/photo", product: product, classes: "h-14 w-14" %>
       </div>
@@ -18,13 +18,13 @@
         <p class="text-xs text-slate-500"><%= product.unit %> · <%= rupees(product.price) %></p>
       </div>
 
-      <p class="w-24 text-sm <%= product.stock.zero? ? "font-semibold text-red-600" : "text-slate-600" %>">
+      <p class="text-sm <%= product.stock.zero? ? "font-semibold text-red-600" : "text-slate-600" %>">
         <%= product.stock.zero? ? "Out of stock" : "#{product.stock} left" %>
       </p>
 
-      <div class="flex w-56 justify-end gap-2">
+      <div class="ml-auto flex flex-wrap justify-end gap-2">
         <% if product.stock.positive? %>
-          <%= button_to "Out of stock", owner_product_path(product, product: { stock: 0 }), method: :patch,
+          <%= button_to "Mark out of stock", owner_product_path(product, product: { stock: 0 }), method: :patch,
                 class: "btn-quiet" %>
         <% end %>
         <%= link_to "Edit", edit_owner_product_path(product), class: "btn" %>

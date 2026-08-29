@@ -23,23 +23,23 @@
 
   <body class="min-h-screen bg-slate-50 text-slate-900 antialiased">
     <header class="site-header sticky top-0 z-10 border-b border-slate-200 bg-white/90 backdrop-blur">
-      <div class="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3">
-        <%= link_to root_path, class: "flex items-center gap-2 text-lg font-bold tracking-tight" do %>
-          <span class="text-2xl">🥬</span> MyKiosk
+      <div class="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-3">
+        <%= link_to root_path, class: "flex items-center gap-2 text-base font-bold tracking-tight sm:text-lg" do %>
+          <span class="text-xl sm:text-2xl">🥬</span> MyKiosk
         <% end %>
 
-        <nav class="flex items-center gap-1 text-sm font-medium">
-          <%= link_to cart_path, class: "flex items-center gap-2 rounded-xl px-3 py-2 hover:bg-emerald-50" do %>
+        <nav class="flex flex-wrap items-center justify-end gap-1 text-sm font-medium">
+          <%= link_to cart_path, class: "flex items-center gap-2 rounded-xl px-2.5 py-2 hover:bg-emerald-50 sm:px-3" do %>
             Basket
             <span class="min-w-5 rounded-full bg-emerald-600 px-1.5 text-center text-xs font-bold text-white leading-5">
               <%= cart_count %>
             </span>
           <% end %>
           <% if authenticated? %>
-            <%= link_to "Orders", orders_path, class: "rounded-xl px-3 py-2 hover:bg-emerald-50" %>
+            <%= link_to "Orders", orders_path, class: "rounded-xl px-2.5 py-2 hover:bg-emerald-50 sm:px-3" %>
             <% if Current.user.owner? %>
-              <%= link_to "Incoming", owner_orders_path, class: "rounded-xl px-3 py-2 hover:bg-emerald-50" %>
-              <%= link_to "Shelf", owner_products_path, class: "rounded-xl px-3 py-2 hover:bg-emerald-50" %>
+              <%= link_to "Incoming", owner_orders_path, class: "rounded-xl px-2.5 py-2 hover:bg-emerald-50 sm:px-3" %>
+              <%= link_to "Shelf", owner_products_path, class: "rounded-xl px-2.5 py-2 hover:bg-emerald-50 sm:px-3" %>
             <% end %>
             <%= button_to "Sign out", session_path, method: :delete, class: "btn-quiet" %>
           <% else %>
@@ -49,7 +49,7 @@
       </div>
     </header>
 
-    <main class="mx-auto max-w-5xl px-4 py-8">
+    <main class="mx-auto max-w-5xl px-4 py-6 sm:py-8">
       <% if flash[:alert] %>
         <p class="mb-6 rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-700"><%= flash[:alert] %></p>
       <% end %>

@@ -10,7 +10,7 @@
 
 <div class="space-y-3">
   <% @orders.each do |order| %>
-    <div class="card flex flex-wrap items-center gap-4 p-4">
+    <div class="card flex flex-wrap items-center gap-3 p-4 sm:gap-4">
       <div class="min-w-40 flex-1">
         <%= link_to "Order ##{order.id}", order, class: "font-semibold text-slate-900 hover:underline" %>
         <p class="text-xs text-slate-500">
@@ -18,7 +18,7 @@
         </p>
       </div>
       <span class="pill"><%= order.status.humanize %></span>
-      <span class="w-24 text-right font-semibold"><%= rupees(order.total) %></span>
+      <span class="ml-auto font-semibold"><%= rupees(order.total) %></span>
       <%= button_to "Reorder", reorder_order_path(order), class: "btn-quiet" %>
     </div>
   <% end %>
