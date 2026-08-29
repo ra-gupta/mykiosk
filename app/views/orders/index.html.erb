@@ -1,22 +1,22 @@
-<h1>Your orders</h1>
+<h1 class="mb-6 text-2xl font-bold tracking-tight">Your orders</h1>
 
 <% if @orders.empty? %>
-  <div class="empty">
-    <div class="thumb">🧾</div>
-    <p>No orders yet.</p>
-    <%= link_to "Start shopping", root_path, class: "button" %>
+  <div class="card p-12 text-center">
+    <p class="text-5xl">🧾</p>
+    <p class="mt-3 text-slate-500">No orders yet.</p>
+    <p class="mt-4"><%= link_to "Start shopping", root_path, class: "btn" %></p>
   </div>
 <% end %>
 
-<% @orders.each do |order| %>
-  <div class="panel">
-    <div class="line">
-      <div class="name">
-        <%= link_to "Order ##{order.id}", order %><br>
-        <small><%= order.created_at.to_fs(:long) %></small>
+<div class="space-y-3">
+  <% @orders.each do |order| %>
+    <%= link_to order, class: "card flex items-center gap-4 p-4 transition hover:shadow-md" do %>
+      <div class="flex-1">
+        <p class="font-semibold">Order #<%= order.id %></p>
+        <p class="text-xs text-slate-500"><%= order.created_at.to_fs(:long) %> · <%= order.city %></p>
       </div>
       <span class="pill"><%= order.status.humanize %></span>
-      <div class="amount"><%= rupees(order.total) %></div>
-    </div>
-  </div>
-<% end %>
+      <span class="w-24 text-right font-semibold"><%= rupees(order.total) %></span>
+    <% end %>
+  <% end %>
+</div>

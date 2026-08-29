@@ -1,32 +1,40 @@
-<h1>Fresh from the kiosk</h1>
+<div class="mb-6 flex flex-wrap items-end justify-between gap-4">
+  <div>
+    <h1 class="text-2xl font-bold tracking-tight">Fresh from the kiosk</h1>
+    <p class="text-sm text-slate-500">Picked this morning · delivered in 30 minutes</p>
+  </div>
 
-<%= form_with url: root_path, method: :get, class: "search" do |form| %>
-  <%= form.search_field :q, value: params[:q], placeholder: "Search vegetables…" %>
-  <%= form.submit "Search" %>
-<% end %>
+  <%= form_with url: root_path, method: :get, class: "flex gap-2" do |form| %>
+    <%= form.search_field :q, value: params[:q], placeholder: "Search vegetables…", class: "field w-56" %>
+    <%= form.submit "Search", class: "btn" %>
+  <% end %>
+</div>
 
-<div class="grid">
+<div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
   <% @products.each do |product| %>
-    <div class="card">
-      <div class="thumb"><%= product.emoji %></div>
-      <h3><%= product.name %></h3>
-      <div class="unit">per <%= product.unit %></div>
-      <div class="price"><%= rupees(product.price) %></div>
-      <footer>
+    <div class="card flex flex-col p-4 transition hover:shadow-md" data-product="<%= product.name %>">
+      <div class="mb-3 flex h-24 items-center justify-center rounded-xl bg-emerald-50 text-5xl">
+        <%= product.emoji %>
+      </div>
+      <h3 class="font-semibold"><%= product.name %></h3>
+      <p class="text-xs text-slate-500">per <%= product.unit %></p>
+      <p class="mb-3 mt-1 text-lg font-bold"><%= rupees(product.price) %></p>
+
+      <div class="mt-auto">
         <% if product.stock.zero? %>
-          <p class="out">Out of stock</p>
+          <p class="py-2 text-center text-sm font-medium text-slate-400">Out of stock</p>
         <% else %>
           <%= render "carts/stepper", product: product %>
         <% end %>
-      </footer>
+      </div>
     </div>
   <% end %>
 </div>
 
 <% if @products.empty? %>
-  <div class="empty">
-    <div class="thumb">🧺</div>
-    <p>Nothing matches “<%= params[:q] %>”.</p>
-    <%= link_to "See everything", root_path %>
+  <div class="card p-12 text-center">
+    <p class="text-5xl">🧺</p>
+    <p class="mt-3 text-slate-500">Nothing matches “<%= params[:q] %>”.</p>
+    <p class="mt-4"><%= link_to "See everything", root_path, class: "btn" %></p>
   </div>
 <% end %>

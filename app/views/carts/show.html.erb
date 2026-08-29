@@ -1,33 +1,42 @@
-<h1>Your basket</h1>
+<h1 class="mb-6 text-2xl font-bold tracking-tight">Your basket</h1>
 
 <% products = Product.where(id: cart.keys).order(:name) %>
 <% if products.empty? %>
-  <div class="empty">
-    <div class="thumb">🧺</div>
-    <p>Your basket is empty.</p>
-    <%= link_to "Browse vegetables", root_path, class: "button" %>
+  <div class="card p-12 text-center">
+    <p class="text-5xl">🧺</p>
+    <p class="mt-3 text-slate-500">Your basket is empty.</p>
+    <p class="mt-4"><%= link_to "Browse vegetables", root_path, class: "btn" %></p>
   </div>
 <% else %>
-  <div class="panel">
-    <% total = 0 %>
-    <% products.each do |product| %>
-      <% quantity = cart[product.id.to_s].to_i %>
-      <% total += product.price * quantity %>
-      <div class="line">
-        <div class="thumb"><%= product.emoji %></div>
-        <div class="name">
-          <%= product.name %><br>
-          <small><%= rupees(product.price) %> per <%= product.unit %></small>
+  <div class="grid gap-6 lg:grid-cols-3">
+    <div class="card divide-y divide-slate-100 lg:col-span-2">
+      <% products.each do |product| %>
+        <% quantity = cart[product.id.to_s].to_i %>
+        <div class="flex items-center gap-4 p-4">
+          <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-2xl">
+            <%= product.emoji %>
+          </div>
+          <div class="flex-1">
+            <p class="font-semibold"><%= product.name %></p>
+            <p class="text-xs text-slate-500"><%= rupees(product.price) %> per <%= product.unit %></p>
+          </div>
+          <div class="w-28"><%= render "carts/stepper", product: product %></div>
+          <p class="w-20 text-right font-semibold"><%= rupees(product.price * quantity) %></p>
         </div>
-        <%= render "carts/stepper", product: product %>
-        <div class="amount"><%= rupees(product.price * quantity) %></div>
-      </div>
-    <% end %>
-    <div class="total"><span>Total</span><span><%= rupees(total) %></span></div>
-  </div>
+      <% end %>
+    </div>
 
-  <div class="actions">
-    <%= link_to "Checkout", new_order_path, class: "button" %>
-    <%= button_to "Empty basket", cart_path, method: :delete, class: "button-quiet" %>
+    <div class="card h-fit p-5">
+      <h2 class="mb-4 font-semibold">Order summary</h2>
+      <dl class="space-y-2 text-sm">
+        <div class="flex justify-between"><dt class="text-slate-500">Items</dt><dd><%= cart_count %></dd></div>
+        <div class="flex justify-between"><dt class="text-slate-500">Delivery</dt><dd class="text-emerald-700">Free</dd></div>
+      </dl>
+      <div class="mt-4 flex items-center justify-between border-t border-slate-200 pt-4 text-lg font-bold">
+        <span>Total</span><span data-total><%= rupees(cart_total) %></span>
+      </div>
+      <%= link_to "Checkout", new_order_path, class: "btn mt-5 w-full" %>
+      <%= button_to "Empty basket", cart_path, method: :delete, class: "btn-quiet mt-2 w-full justify-center" %>
+    </div>
   </div>
 <% end %>

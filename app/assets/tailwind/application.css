@@ -1,0 +1,20 @@
+@import "tailwindcss";
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5
+           text-sm font-semibold text-white transition hover:bg-emerald-700
+           disabled:cursor-not-allowed disabled:opacity-40;
+  }
+  .btn-quiet {
+    @apply inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-slate-500
+           transition hover:bg-slate-100 hover:text-slate-900;
+  }
+  .card { @apply rounded-2xl border border-slate-200 bg-white shadow-sm; }
+  .label { @apply mb-1.5 block text-xs font-semibold text-slate-700; }
+  .field {
+    @apply w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900
+           placeholder:text-slate-400 focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-100;
+  }
+  .pill { @apply inline-flex rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700; }
+}

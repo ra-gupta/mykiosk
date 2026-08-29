@@ -1,20 +1,36 @@
-<h1>Order #<%= @order.id %></h1>
-<p><span class="pill"><%= @order.status.humanize %></span> <small><%= @order.created_at.to_fs(:long) %></small></p>
+<div class="mb-6 flex flex-wrap items-center gap-3">
+  <h1 class="text-2xl font-bold tracking-tight">Order #<%= @order.id %></h1>
+  <span class="pill"><%= @order.status.humanize %></span>
+  <span class="text-sm text-slate-500"><%= @order.created_at.to_fs(:long) %></span>
+</div>
 
-<div class="panel">
-  <% @order.order_items.includes(:product).each do |item| %>
-    <div class="line">
-      <div class="thumb"><%= item.product.emoji %></div>
-      <div class="name"><%= item.product.name %><br><small>× <%= item.quantity %></small></div>
-      <div class="amount"><%= rupees(item.subtotal) %></div>
+<div class="grid gap-6 lg:grid-cols-3">
+  <div class="card divide-y divide-slate-100 lg:col-span-2">
+    <% @order.order_items.includes(:product).each do |item| %>
+      <div class="flex items-center gap-4 p-4">
+        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-2xl">
+          <%= item.product.emoji %>
+        </div>
+        <div class="flex-1">
+          <p class="font-semibold"><%= item.product.name %></p>
+          <p class="text-xs text-slate-500"><%= rupees(item.price) %> × <%= item.quantity %></p>
+        </div>
+        <p class="font-semibold"><%= rupees(item.subtotal) %></p>
+      </div>
+    <% end %>
+    <div class="flex items-center justify-between p-4 text-lg font-bold">
+      <span>Total</span><span><%= rupees(@order.total) %></span>
     </div>
-  <% end %>
-  <div class="total"><span>Total</span><span><%= rupees(@order.total) %></span></div>
+  </div>
+
+  <div class="card h-fit p-5">
+    <h2 class="mb-3 font-semibold">Delivering to</h2>
+    <address class="space-y-1 text-sm not-italic text-slate-600">
+      <% @order.address_lines.each do |line| %>
+        <p><%= line %></p>
+      <% end %>
+    </address>
+  </div>
 </div>
 
-<div class="panel">
-  <strong>Delivering to</strong>
-  <p><%= @order.address %></p>
-</div>
-
-<%= link_to "All orders", orders_path %>
+<p class="mt-6"><%= link_to "All orders", orders_path, class: "btn-quiet" %></p>

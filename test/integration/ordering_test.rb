@@ -9,7 +9,7 @@ class OrderingTest < ActionDispatch::IntegrationTest
   test "web: browse, fill basket, checkout, and see the order" do
     post session_path, params: { email_address: @user.email_address, password: "secret123" }
     patch cart_item_path(@tomato), params: { quantity: 2 }
-    post orders_path, params: { address: "12 Market Rd" }
+    post orders_path, params: { order: address_attributes }
 
     order = @user.orders.sole
     assert_equal 60, order.total
@@ -18,12 +18,13 @@ class OrderingTest < ActionDispatch::IntegrationTest
 
     get order_path(order)
     assert_select "h1", "Order ##{order.id}"
+    assert_select "address", /Indiranagar/
   end
 
   test "cart quantity is capped at available stock" do
     patch cart_item_path(@tomato), params: { quantity: 99 }
     get cart_path
-    assert_select ".amount", text: "₹150.00"
+    assert_select "[data-total]", text: "₹150.00"
   end
 
   test "api: sign in, place an order, list orders" do
@@ -32,7 +33,7 @@ class OrderingTest < ActionDispatch::IntegrationTest
     headers = { "Authorization" => "Bearer #{token}" }
 
     post api_v1_orders_path, headers: headers,
-      params: { address: "12 Market Rd", items: [ { product_id: @tomato.id, quantity: 2 } ] }
+      params: { address: address_attributes, items: [ { product_id: @tomato.id, quantity: 2 } ] }
     assert_response :created
     assert_equal "60.0", response.parsed_body["total"]
 
@@ -45,7 +46,7 @@ class OrderingTest < ActionDispatch::IntegrationTest
   test "api: ordering more than the stock leaves stock untouched" do
     post api_v1_session_path, params: { email_address: @user.email_address, password: "secret123" }
     post api_v1_orders_path, headers: { "Authorization" => "Bearer #{response.parsed_body["token"]}" },
-      params: { address: "12 Market Rd", items: [ { product_id: @tomato.id, quantity: 99 } ] }
+      params: { address: address_attributes, items: [ { product_id: @tomato.id, quantity: 99 } ] }
 
     assert_response :unprocessable_entity
     assert_equal 5, @tomato.reload.stock

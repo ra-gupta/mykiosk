@@ -1,11 +1,12 @@
 <% quantity = cart[product.id.to_s].to_i %>
 <% if quantity.zero? %>
-  <%= button_to "Add", cart_item_path(product), method: :patch, params: { quantity: 1 }, class: "stepper-add" %>
+  <%= button_to "Add", cart_item_path(product), method: :patch, params: { quantity: 1 }, class: "btn w-full" %>
 <% else %>
-  <div class="stepper">
-    <%= button_to "−", cart_item_path(product), method: :patch, params: { quantity: quantity - 1 } %>
-    <span class="count"><%= quantity %></span>
+  <div class="flex items-center justify-between gap-1 rounded-xl bg-emerald-50 p-1">
+    <%= button_to "−", cart_item_path(product), method: :patch, params: { quantity: quantity - 1 },
+          class: "btn h-8 w-8 rounded-lg px-0 text-base" %>
+    <span class="min-w-6 text-center text-sm font-bold"><%= quantity %></span>
     <%= button_to "+", cart_item_path(product), method: :patch, params: { quantity: quantity + 1 },
-          disabled: quantity >= product.stock %>
+          disabled: quantity >= product.stock, class: "btn h-8 w-8 rounded-lg px-0 text-base" %>
   </div>
 <% end %>

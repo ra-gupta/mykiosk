@@ -8,14 +8,20 @@ class OrdersController < ApplicationController
   end
 
   def new
-    redirect_to cart_path, alert: "Your cart is empty." if cart.empty?
+    return redirect_to cart_path, alert: "Your basket is empty." if cart.empty?
+
+    @order = Order.new(phone_number: Current.user.phone_number, state: "Karnataka")
   end
 
   def create
-    @order = Order.place!(user: Current.user, address: params[:address], cart: cart)
+    @order = Order.place!(user: Current.user, address: address_params, cart: cart)
     session[:cart] = {}
     redirect_to @order, notice: "Order placed."
   rescue ActiveRecord::RecordInvalid => e
-    redirect_to cart_path, alert: e.record.errors.full_messages.to_sentence
+    @order = e.record
+    render :new, status: :unprocessable_entity
   end
+
+  private
+    def address_params = params.require(:order).permit(*Order::ADDRESS_FIELDS)
 end

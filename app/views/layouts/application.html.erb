@@ -17,31 +17,42 @@
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
 
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
-    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
-    <header class="site-header">
-      <%= link_to root_path, class: "brand" do %><span>🥬</span> MyKiosk<% end %>
-      <nav>
-        <%= link_to cart_path, class: "cart-link" do %>
-          Cart <span class="badge"><%= cart_count %></span>
+  <body class="min-h-screen bg-slate-50 text-slate-900 antialiased">
+    <header class="site-header sticky top-0 z-10 border-b border-slate-200 bg-white/90 backdrop-blur">
+      <div class="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3">
+        <%= link_to root_path, class: "flex items-center gap-2 text-lg font-bold tracking-tight" do %>
+          <span class="text-2xl">🥬</span> MyKiosk
         <% end %>
-        <% if authenticated? %>
-          <%= link_to "Orders", orders_path %>
-          <%= link_to "Incoming", owner_orders_path if Current.user.owner? %>
-          <%= button_to "Sign out", session_path, method: :delete, class: "button-quiet" %>
-        <% else %>
-          <%= link_to "Sign in", new_session_path %>
-        <% end %>
-      </nav>
+
+        <nav class="flex items-center gap-1 text-sm font-medium">
+          <%= link_to cart_path, class: "flex items-center gap-2 rounded-xl px-3 py-2 hover:bg-emerald-50" do %>
+            Basket
+            <span class="min-w-5 rounded-full bg-emerald-600 px-1.5 text-center text-xs font-bold text-white leading-5">
+              <%= cart_count %>
+            </span>
+          <% end %>
+          <% if authenticated? %>
+            <%= link_to "Orders", orders_path, class: "rounded-xl px-3 py-2 hover:bg-emerald-50" %>
+            <%= link_to "Incoming", owner_orders_path, class: "rounded-xl px-3 py-2 hover:bg-emerald-50" if Current.user.owner? %>
+            <%= button_to "Sign out", session_path, method: :delete, class: "btn-quiet" %>
+          <% else %>
+            <%= link_to "Sign in", new_session_path, class: "btn" %>
+          <% end %>
+        </nav>
+      </div>
     </header>
 
-    <main>
-      <% if flash[:alert] %><p class="flash alert"><%= flash[:alert] %></p><% end %>
-      <% if flash[:notice] %><p class="flash notice"><%= flash[:notice] %></p><% end %>
+    <main class="mx-auto max-w-5xl px-4 py-8">
+      <% if flash[:alert] %>
+        <p class="mb-6 rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-700"><%= flash[:alert] %></p>
+      <% end %>
+      <% if flash[:notice] %>
+        <p class="mb-6 rounded-xl bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700"><%= flash[:notice] %></p>
+      <% end %>
       <%= yield %>
     </main>
   </body>

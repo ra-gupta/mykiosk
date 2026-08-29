@@ -1,12 +1,71 @@
-<h1>Where should we deliver?</h1>
+<h1 class="mb-6 text-2xl font-bold tracking-tight">Delivery address</h1>
 
-<div class="panel">
-  <%= form_with url: orders_path do |form| %>
-    <%= form.label :address, "Delivery address" %>
-    <%= form.text_area :address, rows: 4, required: true, autofocus: true,
-          placeholder: "Flat, street, landmark, pin code" %>
-    <%= form.submit "Place order (cash on delivery)" %>
+<div class="grid gap-6 lg:grid-cols-3">
+  <%= form_with model: @order, class: "card space-y-4 p-6 lg:col-span-2" do |form| %>
+    <% if @order.errors.any? %>
+      <div class="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">
+        <%= @order.errors.full_messages.to_sentence %>
+      </div>
+    <% end %>
+
+    <div>
+      <%= form.label :recipient_name, "Full name (first and last name)", class: "label" %>
+      <%= form.text_field :recipient_name, required: true, autofocus: true, autocomplete: "name", class: "field" %>
+    </div>
+
+    <div class="grid gap-4 sm:grid-cols-2">
+      <div>
+        <%= form.label :phone_number, "Mobile number", class: "label" %>
+        <%= form.telephone_field :phone_number, required: true, autocomplete: "tel", inputmode: "numeric",
+              placeholder: "10 digit mobile number", class: "field" %>
+      </div>
+      <div>
+        <%= form.label :pincode, "Pincode", class: "label" %>
+        <%= form.text_field :pincode, required: true, autocomplete: "postal-code", inputmode: "numeric",
+              placeholder: "6 digits", class: "field" %>
+      </div>
+    </div>
+
+    <div>
+      <%= form.label :line1, "Flat, house no., building, apartment", class: "label" %>
+      <%= form.text_field :line1, required: true, autocomplete: "address-line1", class: "field" %>
+    </div>
+
+    <div>
+      <%= form.label :line2, "Area, street, sector, village", class: "label" %>
+      <%= form.text_field :line2, required: true, autocomplete: "address-line2", class: "field" %>
+    </div>
+
+    <div>
+      <%= form.label :landmark, "Landmark (optional)", class: "label" %>
+      <%= form.text_field :landmark, placeholder: "e.g. near the water tank", class: "field" %>
+    </div>
+
+    <div class="grid gap-4 sm:grid-cols-2">
+      <div>
+        <%= form.label :city, "Town / city", class: "label" %>
+        <%= form.text_field :city, required: true, autocomplete: "address-level2", class: "field" %>
+      </div>
+      <div>
+        <%= form.label :state, "State", class: "label" %>
+        <%= form.select :state, Order::STATES, { include_blank: "Choose a state" },
+              required: true, class: "field" %>
+      </div>
+    </div>
+
+    <%= form.submit "Place order (cash on delivery)", class: "btn w-full" %>
   <% end %>
-</div>
 
-<%= link_to "Back to basket", cart_path %>
+  <div class="card h-fit p-5">
+    <h2 class="mb-4 font-semibold">Order summary</h2>
+    <dl class="space-y-2 text-sm">
+      <div class="flex justify-between"><dt class="text-slate-500">Items</dt><dd><%= cart_count %></dd></div>
+      <div class="flex justify-between"><dt class="text-slate-500">Delivery</dt><dd class="text-emerald-700">Free</dd></div>
+    </dl>
+    <div class="mt-4 flex items-center justify-between border-t border-slate-200 pt-4 text-lg font-bold">
+      <span>Total</span><span><%= rupees(cart_total) %></span>
+    </div>
+    <p class="mt-4 text-xs text-slate-500">Pay the delivery person in cash when your vegetables arrive.</p>
+    <%= link_to "Back to basket", cart_path, class: "btn-quiet mt-2 w-full justify-center" %>
+  </div>
+</div>

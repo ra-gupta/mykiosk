@@ -14,7 +14,7 @@ class ShoppingTest < ApplicationSystemTestCase
 
     within(".card", text: "Tomato") { click_on "Add" }
     within(".card", text: "Tomato") { click_on "+" }
-    within(".site-header") { click_on "Cart" }
+    within("header") { click_on "Basket" }
     shot "02-cart"
 
     click_on "Checkout"
@@ -26,9 +26,11 @@ class ShoppingTest < ApplicationSystemTestCase
     fill_in "code", with: User.start_phone_verification("9876543210").otp
     click_on "Verify and continue"
 
-    within(".site-header") { click_on "Cart" }
+    within("header") { click_on "Basket" }
     click_on "Checkout"
-    fill_in "address", with: "12 Market Road, Bengaluru"
+    attributes = address_attributes
+    select attributes.delete(:state), from: "order_state"
+    attributes.each { |field, value| fill_in "order_#{field}", with: value }
     shot "05-checkout"
     click_on "Place order (cash on delivery)"
     assert_text "Order placed."
@@ -39,7 +41,7 @@ class ShoppingTest < ApplicationSystemTestCase
     fill_in "password", with: "kiosk1234"
     within("main") { click_on "Sign in" }
     click_on "Incoming"
-    assert_text "12 Market Road"
+    assert_text "Indiranagar"
     shot "07-owner-incoming"
   end
 
