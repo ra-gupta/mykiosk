@@ -1,21 +1,38 @@
-<h1>Sign in</h1>
+<div class="auth">
+<% if @otp_phone %>
+  <h1>Enter the code</h1>
+  <p>We sent a 6 digit code to <%= @otp_phone %>. It expires in 5 minutes.</p>
 
-<h2>With your mobile number</h2>
-<%= form_with url: phone_verification_path do |form| %>
-  <%= form.telephone_field :phone_number, required: true, autofocus: true, autocomplete: "tel",
-        inputmode: "numeric", placeholder: "10 digit mobile number" %><br>
-  <%= form.submit "Send OTP" %>
+  <%= form_with url: session_path, class: "panel" do |form| %>
+    <%= form.hidden_field :phone_number, value: @otp_phone %>
+    <%= form.text_field :code, required: true, autofocus: true, autocomplete: "one-time-code",
+          inputmode: "numeric", pattern: "[0-9]{6}", placeholder: "6 digit code" %>
+    <%= form.submit "Verify and continue" %>
+  <% end %>
+
+  <%= button_to "Send a new code", phone_verification_path, params: { phone_number: @otp_phone }, class: "button-quiet" %>
+<% else %>
+  <h1>Sign in</h1>
+
+  <%= form_with url: phone_verification_path, class: "panel" do |form| %>
+    <%= form.label :phone_number, "Mobile number" %>
+    <%= form.telephone_field :phone_number, required: true, autofocus: true, autocomplete: "tel",
+          inputmode: "numeric", placeholder: "10 digit mobile number" %>
+    <%= form.submit "Send OTP" %>
+  <% end %>
+  <p style="text-align:center"><small>New here? The code signs you up too.</small></p>
+
+  <div class="divider">or</div>
+
+  <%= form_with url: session_path, class: "panel" do |form| %>
+    <%= form.email_field :email_address, required: true, autocomplete: "username", placeholder: "Email address", value: params[:email_address] %>
+    <%= form.password_field :password, required: true, autocomplete: "current-password", placeholder: "Password", maxlength: 72 %>
+    <%= form.submit "Sign in" %>
+  <% end %>
+
+  <p style="text-align:center">
+    <%= link_to "Create an account", new_registration_path %> ·
+    <%= link_to "Forgot password?", new_password_path %>
+  </p>
 <% end %>
-<p><small>New here? The code signs you up as well.</small></p>
-
-<h2>With your email</h2>
-<%= form_with url: session_path do |form| %>
-  <%= form.email_field :email_address, required: true, autocomplete: "username", placeholder: "Email address", value: params[:email_address] %><br>
-  <%= form.password_field :password, required: true, autocomplete: "current-password", placeholder: "Password", maxlength: 72 %><br>
-  <%= form.submit "Sign in" %>
-<% end %>
-
-<p>
-  <%= link_to "Create an account", new_registration_path %> ·
-  <%= link_to "Forgot password?", new_password_path %>
-</p>
+</div>

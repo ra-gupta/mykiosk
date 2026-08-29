@@ -1,6 +1,11 @@
-<div class="card" id="<%= dom_id(order) %>" data-controller="new-order" data-new-order-title-value="New order #<%= order.id %> · <%= rupees(order.total) %>">
-  <strong>Order #<%= order.id %></strong> · <%= rupees(order.total) %> · <%= order.status.humanize %><br>
-  <small><%= order.user.email_address %> · <%= order.created_at.to_fs(:short) %></small>
+<div class="card" id="<%= dom_id(order) %>" data-controller="new-order"
+     data-new-order-title-value="New order #<%= order.id %> · <%= rupees(order.total) %>">
+  <div class="actions">
+    <strong>Order #<%= order.id %></strong>
+    <span class="pill"><%= order.status.humanize %></span>
+  </div>
+  <div class="price"><%= rupees(order.total) %></div>
+  <small><%= order.user.display_name %> · <%= order.created_at.to_fs(:short) %></small>
   <ul>
     <% order.order_items.each do |item| %>
       <li><%= item.product.name %> × <%= item.quantity %></li>

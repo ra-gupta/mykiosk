@@ -1,11 +1,11 @@
 <% quantity = cart[product.id.to_s].to_i %>
-<div class="qty">
-  <% if quantity.zero? %>
-    <%= button_to "Add", cart_item_path(product), method: :patch, params: { quantity: 1 } %>
-  <% else %>
+<% if quantity.zero? %>
+  <%= button_to "Add", cart_item_path(product), method: :patch, params: { quantity: 1 }, class: "stepper-add" %>
+<% else %>
+  <div class="stepper">
     <%= button_to "−", cart_item_path(product), method: :patch, params: { quantity: quantity - 1 } %>
-    <span><%= quantity %></span>
+    <span class="count"><%= quantity %></span>
     <%= button_to "+", cart_item_path(product), method: :patch, params: { quantity: quantity + 1 },
           disabled: quantity >= product.stock %>
-  <% end %>
-</div>
+  </div>
+<% end %>

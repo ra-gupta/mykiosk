@@ -1,9 +1,12 @@
-<h1>Delivery details</h1>
+<h1>Where should we deliver?</h1>
 
-<%= form_with url: orders_path do |form| %>
-  <%= form.label :address, "Delivery address" %><br>
-  <%= form.text_area :address, rows: 4, required: true %><br>
-  <%= form.submit "Place order (cash on delivery)" %>
-<% end %>
+<div class="panel">
+  <%= form_with url: orders_path do |form| %>
+    <%= form.label :address, "Delivery address" %>
+    <%= form.text_area :address, rows: 4, required: true, autofocus: true,
+          placeholder: "Flat, street, landmark, pin code" %>
+    <%= form.submit "Place order (cash on delivery)" %>
+  <% end %>
+</div>
 
-<%= link_to "Back to cart", cart_path %>
+<%= link_to "Back to basket", cart_path %>

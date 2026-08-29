@@ -23,7 +23,7 @@ class OrderingTest < ActionDispatch::IntegrationTest
   test "cart quantity is capped at available stock" do
     patch cart_item_path(@tomato), params: { quantity: 99 }
     get cart_path
-    assert_select "td", text: "₹150.00"
+    assert_select ".amount", text: "₹150.00"
   end
 
   test "api: sign in, place an order, list orders" do
