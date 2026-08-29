@@ -25,7 +25,7 @@ FOREIGN KEY ("user_id")
 );
 CREATE INDEX "index_device_tokens_on_user_id" ON "device_tokens" ("user_id") /*application='Mykiosk'*/;
 CREATE UNIQUE INDEX "index_device_tokens_on_token" ON "device_tokens" ("token") /*application='Mykiosk'*/;
-CREATE TABLE IF NOT EXISTS "orders" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "user_id" integer NOT NULL, "status" varchar DEFAULT 'placed' NOT NULL, "total" decimal(8,2) NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, "recipient_name" varchar NOT NULL, "phone_number" varchar NOT NULL, "pincode" varchar NOT NULL, "line1" varchar NOT NULL, "line2" varchar NOT NULL, "landmark" varchar, "city" varchar NOT NULL, "state" varchar NOT NULL, CONSTRAINT "fk_rails_f868b47f6a"
+CREATE TABLE IF NOT EXISTS "orders" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "user_id" integer NOT NULL, "status" varchar DEFAULT 'placed' NOT NULL, "total" decimal(8,2) NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, "recipient_name" varchar NOT NULL, "phone_number" varchar NOT NULL, "pincode" varchar NOT NULL, "line1" varchar NOT NULL, "line2" varchar NOT NULL, "landmark" varchar, "city" varchar NOT NULL, "state" varchar NOT NULL, "delivery_option" varchar DEFAULT 'instant' NOT NULL /*application='Mykiosk'*/, CONSTRAINT "fk_rails_f868b47f6a"
 FOREIGN KEY ("user_id")
   REFERENCES "users" ("id")
 );
@@ -44,6 +44,7 @@ FOREIGN KEY ("blob_id")
 );
 CREATE UNIQUE INDEX "index_active_storage_variant_records_uniqueness" ON "active_storage_variant_records" ("blob_id", "variation_digest") /*application='Mykiosk'*/;
 INSERT INTO "schema_migrations" (version) VALUES
+('20260829172014'),
 ('20260829171106'),
 ('20260829170449'),
 ('20260829165753'),

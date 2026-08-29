@@ -4,7 +4,7 @@ class OwnerPushJob < ApplicationJob
   def perform(order)
     Fcm.notify(DeviceToken.owners.pluck(:token),
       title: "New order ##{order.id}",
-      body: "#{ActionController::Base.helpers.number_to_currency(order.total, unit: '₹')} · #{order.user.display_name}",
+      body: "#{ActionController::Base.helpers.number_to_currency(order.total, unit: '₹')} · #{order.delivery_promise}",
       data: { order_id: order.id })
   end
 end

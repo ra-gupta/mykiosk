@@ -5,7 +5,7 @@ class OwnerTest < ActionDispatch::IntegrationTest
     @owner = User.create!(email_address: "owner@example.com", password: "secret123", owner: true)
     @shopper = User.create!(phone_number: "9876543210")
     @product = Product.create!(name: "Tomato", price: 30, unit: "1 kg", stock: 5)
-    @order = Order.place!(user: @shopper, address: address_attributes, cart: { @product.id.to_s => 1 })
+    @order = Order.place!(user: @shopper, details: address_attributes, cart: { @product.id.to_s => 1 })
   end
 
   test "the owner takes an item off the shelf and puts it back" do

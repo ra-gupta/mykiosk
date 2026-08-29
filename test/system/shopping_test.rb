@@ -31,6 +31,7 @@ class ShoppingTest < ApplicationSystemTestCase
     attributes = address_attributes
     select attributes.delete(:state), from: "order_state"
     attributes.each { |field, value| fill_in "order_#{field}", with: value }
+    choose "By 9 pm today"
     shot "05-checkout"
     click_on "Place order (cash on delivery)"
     assert_text "Order placed."
@@ -42,6 +43,7 @@ class ShoppingTest < ApplicationSystemTestCase
     within("main") { click_on "Sign in" }
     click_on "Incoming"
     assert_text "Indiranagar"
+    assert_text "By 9 pm today"
     shot "07-owner-incoming"
 
     click_on "Mark packed"

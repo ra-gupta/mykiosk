@@ -10,18 +10,19 @@ module Api
       end
 
       # { address: { recipient_name:, phone_number:, pincode:, line1:, line2:, landmark:, city:, state: },
-      #   items: [ { product_id:, quantity: } ] }
+      #   delivery_option: "instant" | "end_of_day", items: [ { product_id:, quantity: } ] }
       def create
         cart = params.require(:items).to_h { |item| [ item[:product_id].to_s, item[:quantity].to_i ] }
-        order = Order.place!(user: Current.user, cart:,
-          address: params.require(:address).permit(*Order::ADDRESS_FIELDS))
+        details = params.require(:address).permit(*Order::ADDRESS_FIELDS)
+          .merge(delivery_option: params[:delivery_option])
+        order = Order.place!(user: Current.user, cart:, details:)
         render json: order_json(order), status: :created
       rescue ActiveRecord::RecordInvalid => e
         render json: { errors: e.record.errors.full_messages }, status: :unprocessable_entity
       end
 
       private
-        def order_fields = %i[ id status total created_at ] + Order::ADDRESS_FIELDS
+        def order_fields = %i[ id status total created_at ] + Order::FIELDS
 
         def order_json(order)
           order.as_json(only: order_fields).merge(

@@ -9,10 +9,11 @@ class OrderingTest < ActionDispatch::IntegrationTest
   test "web: browse, fill basket, checkout, and see the order" do
     post session_path, params: { email_address: @user.email_address, password: "secret123" }
     patch cart_item_path(@tomato), params: { quantity: 2 }
-    post orders_path, params: { order: address_attributes }
+    post orders_path, params: { order: address_attributes(delivery_option: "end_of_day") }
 
     order = @user.orders.sole
     assert_equal 60, order.total
+    assert_equal "end_of_day", order.delivery_option
     assert_equal 3, @tomato.reload.stock
     assert_empty session[:cart]
 
@@ -35,6 +36,7 @@ class OrderingTest < ActionDispatch::IntegrationTest
     post api_v1_orders_path, headers: headers,
       params: { address: address_attributes, items: [ { product_id: @tomato.id, quantity: 2 } ] }
     assert_response :created
+    assert_equal "instant", response.parsed_body["delivery_option"]
     assert_equal "60.0", response.parsed_body["total"]
 
     get api_v1_orders_path, headers: headers

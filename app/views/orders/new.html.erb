@@ -53,6 +53,22 @@
       </div>
     </div>
 
+    <fieldset class="space-y-2">
+      <legend class="label">When should we bring it?</legend>
+      <% Order::DELIVERY_OPTIONS.each do |option, promise| %>
+        <label class="flex cursor-pointer items-start gap-3 rounded-xl border border-slate-300 p-3 has-[:checked]:border-emerald-600 has-[:checked]:bg-emerald-50">
+          <%= form.radio_button :delivery_option, option, checked: @order.delivery_option == option, class: "mt-1" %>
+          <span>
+            <span class="block text-sm font-semibold"><%= promise %></span>
+            <span class="block text-xs text-slate-500">
+              <%= option == "instant" ? "We pack it and send it out right away." :
+                                        "We bring it with the evening round — no rush, same price." %>
+            </span>
+          </span>
+        </label>
+      <% end %>
+    </fieldset>
+
     <%= form.submit "Place order (cash on delivery)", class: "btn w-full" %>
   <% end %>
 

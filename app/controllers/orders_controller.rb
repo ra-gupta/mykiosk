@@ -14,7 +14,7 @@ class OrdersController < ApplicationController
   end
 
   def create
-    @order = Order.place!(user: Current.user, address: address_params, cart: cart)
+    @order = Order.place!(user: Current.user, details: order_params, cart: cart)
     session[:cart] = {}
     redirect_to @order, notice: "Order placed."
   rescue ActiveRecord::RecordInvalid => e
@@ -23,5 +23,5 @@ class OrdersController < ApplicationController
   end
 
   private
-    def address_params = params.require(:order).permit(*Order::ADDRESS_FIELDS)
+    def order_params = params.require(:order).permit(*Order::FIELDS)
 end

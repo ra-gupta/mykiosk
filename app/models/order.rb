@@ -2,6 +2,8 @@ class Order < ApplicationRecord
   STATUSES = %w[ placed packed out_for_delivery delivered cancelled ]
   NEXT_STATUS = { "placed" => "packed", "packed" => "out_for_delivery", "out_for_delivery" => "delivered" }.freeze
   ADDRESS_FIELDS = %i[ recipient_name phone_number pincode line1 line2 landmark city state ]
+  DELIVERY_OPTIONS = { "instant" => "In 30 minutes", "end_of_day" => "By 9 pm today" }.freeze
+  FIELDS = ADDRESS_FIELDS + %i[ delivery_option ]
   STATES = [
     "Andaman and Nicobar Islands", "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chandigarh",
     "Chhattisgarh", "Dadra and Nagar Haveli and Daman and Diu", "Delhi", "Goa", "Gujarat", "Haryana",
@@ -20,6 +22,7 @@ class Order < ApplicationRecord
   validates :pincode, format: { with: /\A\d{6}\z/, message: "must be 6 digits" }
   validates :phone_number, format: { with: /\A\d{10}\z/, message: "must be 10 digits" }
   validates :status, inclusion: { in: STATUSES }
+  validates :delivery_option, inclusion: { in: DELIVERY_OPTIONS.keys }
 
   after_create_commit -> { broadcast_prepend_to "incoming_orders", target: "incoming_orders" }
   after_create_commit -> { OwnerPushJob.perform_later(self) }
@@ -27,9 +30,9 @@ class Order < ApplicationRecord
 
   # ponytail: leans on SQLite's single-writer transaction instead of row locks;
   # add `Product.lock` if this moves to Postgres/MySQL.
-  def self.place!(user:, address:, cart:)
+  def self.place!(user:, details:, cart:)
     transaction do
-      order = new(address.to_h.symbolize_keys.slice(*ADDRESS_FIELDS).merge(user:, total: 0))
+      order = new(details.to_h.symbolize_keys.slice(*FIELDS).compact_blank.merge(user:, total: 0))
       total = 0
 
       cart.each do |product_id, quantity|
@@ -52,6 +55,10 @@ class Order < ApplicationRecord
   end
 
   def next_status = NEXT_STATUS[status]
+
+  def delivery_promise = DELIVERY_OPTIONS[delivery_option]
+
+  def instant? = delivery_option == "instant"
 
   def open? = status.in?(%w[ placed packed ])
 

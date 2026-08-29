@@ -13,7 +13,9 @@
     <%= link_to order, class: "card flex items-center gap-4 p-4 transition hover:shadow-md" do %>
       <div class="flex-1">
         <p class="font-semibold">Order #<%= order.id %></p>
-        <p class="text-xs text-slate-500"><%= order.created_at.to_fs(:long) %> · <%= order.city %></p>
+        <p class="text-xs text-slate-500">
+          <%= order.created_at.to_fs(:long) %> · <%= order.city %> · <%= order.delivery_promise %>
+        </p>
       </div>
       <span class="pill"><%= order.status.humanize %></span>
       <span class="w-24 text-right font-semibold"><%= rupees(order.total) %></span>
