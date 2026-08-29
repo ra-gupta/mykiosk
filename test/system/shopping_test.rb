@@ -37,6 +37,12 @@ class ShoppingTest < ApplicationSystemTestCase
     assert_text "Order placed."
     shot "06-order-placed"
 
+    click_on "Orders"
+    click_on "Reorder"
+    assert_text "Basket refilled"
+    shot "10-reorder"
+    click_on "Empty basket"
+
     click_on "Sign out"
     fill_in "email_address", with: @owner.email_address
     fill_in "password", with: "kiosk1234"

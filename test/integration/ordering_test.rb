@@ -22,6 +22,25 @@ class OrderingTest < ActionDispatch::IntegrationTest
     assert_select "address", /Indiranagar/
   end
 
+  test "a second order prefills the address and can be refilled from the first" do
+    post session_path, params: { email_address: @user.email_address, password: "secret123" }
+    patch cart_item_path(@tomato), params: { quantity: 2 }
+    post orders_path, params: { order: address_attributes }
+    order = @user.orders.sole
+
+    post reorder_order_path(order)
+    assert_redirected_to cart_path
+    assert_equal({ @tomato.id.to_s => 2 }, session[:cart])
+
+    get new_order_path
+    assert_select "input[name='order[line1]'][value=?]", address_attributes[:line1]
+
+    @tomato.update!(stock: 0)
+    post reorder_order_path(order)
+    assert_redirected_to orders_path
+    assert_empty session[:cart]
+  end
+
   test "cart quantity is capped at available stock" do
     patch cart_item_path(@tomato), params: { quantity: 99 }
     get cart_path

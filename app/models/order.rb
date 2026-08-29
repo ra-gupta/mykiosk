@@ -3,6 +3,12 @@ class Order < ApplicationRecord
   NEXT_STATUS = { "placed" => "packed", "packed" => "out_for_delivery", "out_for_delivery" => "delivered" }.freeze
   ADDRESS_FIELDS = %i[ recipient_name phone_number pincode line1 line2 landmark city state ]
   DELIVERY_OPTIONS = { "instant" => "In 30 minutes", "end_of_day" => "By 9 pm today" }.freeze
+  CUSTOMER_PUSH = {
+    "packed" => "We are packing your vegetables now.",
+    "out_for_delivery" => "Your order is on the way.",
+    "delivered" => "Delivered. Enjoy!",
+    "cancelled" => "Your order was cancelled. Call the kiosk if that looks wrong."
+  }.freeze
   FIELDS = ADDRESS_FIELDS + %i[ delivery_option ]
   STATES = [
     "Andaman and Nicobar Islands", "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chandigarh",
@@ -25,8 +31,9 @@ class Order < ApplicationRecord
   validates :delivery_option, inclusion: { in: DELIVERY_OPTIONS.keys }
 
   after_create_commit -> { broadcast_prepend_to "incoming_orders", target: "incoming_orders" }
-  after_create_commit -> { OwnerPushJob.perform_later(self) }
+  after_create_commit -> { OrderPushJob.perform_later(self, "owner") }
   after_update_commit -> { broadcast_replace_to "incoming_orders" }
+  after_update_commit -> { OrderPushJob.perform_later(self, "customer") if saved_change_to_status? }
 
   # ponytail: leans on SQLite's single-writer transaction instead of row locks;
   # add `Product.lock` if this moves to Postgres/MySQL.
@@ -61,6 +68,14 @@ class Order < ApplicationRecord
   def instant? = delivery_option == "instant"
 
   def open? = status.in?(%w[ placed packed ])
+
+  # Quantities are clamped to what is on the shelf today; anything sold out drops off.
+  def to_cart
+    order_items.each_with_object({}) do |item, cart|
+      available = [ item.quantity, item.product.stock ].min
+      cart[item.product_id.to_s] = available if available.positive?
+    end
+  end
 
   def address_lines
     [ recipient_name, line1, line2, landmark, "#{city}, #{state} #{pincode}", "Phone: #{phone_number}" ].compact_blank
