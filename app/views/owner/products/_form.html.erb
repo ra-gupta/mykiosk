@@ -1,0 +1,45 @@
+<%= form_with model: [ :owner, product ], class: "card space-y-4 p-6" do |form| %>
+  <% if product.errors.any? %>
+    <div class="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">
+      <%= product.errors.full_messages.to_sentence %>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :name, class: "label" %>
+    <%= form.text_field :name, required: true, autofocus: true, class: "field" %>
+  </div>
+
+  <div class="grid gap-4 sm:grid-cols-3">
+    <div>
+      <%= form.label :price, "Selling price ₹", class: "label" %>
+      <%= form.number_field :price, step: 0.5, required: true, class: "field" %>
+    </div>
+    <div>
+      <%= form.label :mrp, "MRP ₹ (optional)", class: "label" %>
+      <%= form.number_field :mrp, step: 0.5, class: "field" %>
+    </div>
+    <div>
+      <%= form.label :stock, "Stock", class: "label" %>
+      <%= form.number_field :stock, required: true, class: "field" %>
+    </div>
+  </div>
+
+  <div>
+    <%= form.label :unit, "Pack size", class: "label" %>
+    <%= form.text_field :unit, required: true, placeholder: "500 g", class: "field" %>
+  </div>
+
+  <div>
+    <%= form.label :photo, "Photo", class: "label" %>
+    <%= form.file_field :photo, accept: "image/*", class: "field" %>
+  </div>
+
+  <div class="flex gap-2">
+    <%= form.submit class: "btn" %>
+    <%= link_to "Back to the shelf", owner_products_path, class: "btn-quiet" %>
+    <% if product.persisted? %>
+      <%= button_to "Remove", owner_product_path(product), method: :delete, class: "btn-quiet ml-auto text-red-600" %>
+    <% end %>
+  </div>
+<% end %>

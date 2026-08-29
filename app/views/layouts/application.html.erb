@@ -37,7 +37,10 @@
           <% end %>
           <% if authenticated? %>
             <%= link_to "Orders", orders_path, class: "rounded-xl px-3 py-2 hover:bg-emerald-50" %>
-            <%= link_to "Incoming", owner_orders_path, class: "rounded-xl px-3 py-2 hover:bg-emerald-50" if Current.user.owner? %>
+            <% if Current.user.owner? %>
+              <%= link_to "Incoming", owner_orders_path, class: "rounded-xl px-3 py-2 hover:bg-emerald-50" %>
+              <%= link_to "Shelf", owner_products_path, class: "rounded-xl px-3 py-2 hover:bg-emerald-50" %>
+            <% end %>
             <%= button_to "Sign out", session_path, method: :delete, class: "btn-quiet" %>
           <% else %>
             <%= link_to "Sign in", new_session_path, class: "btn" %>

@@ -8,8 +8,8 @@
   <div class="card divide-y divide-slate-100 lg:col-span-2">
     <% @order.order_items.includes(:product).each do |item| %>
       <div class="flex items-center gap-4 p-4">
-        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-2xl">
-          <%= item.product.emoji %>
+        <div class="h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-slate-50">
+          <%= render "products/photo", product: item.product, classes: "h-14 w-14" %>
         </div>
         <div class="flex-1">
           <p class="font-semibold"><%= item.product.name %></p>

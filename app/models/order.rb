@@ -1,5 +1,6 @@
 class Order < ApplicationRecord
   STATUSES = %w[ placed packed out_for_delivery delivered cancelled ]
+  NEXT_STATUS = { "placed" => "packed", "packed" => "out_for_delivery", "out_for_delivery" => "delivered" }.freeze
   ADDRESS_FIELDS = %i[ recipient_name phone_number pincode line1 line2 landmark city state ]
   STATES = [
     "Andaman and Nicobar Islands", "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chandigarh",
@@ -22,6 +23,7 @@ class Order < ApplicationRecord
 
   after_create_commit -> { broadcast_prepend_to "incoming_orders", target: "incoming_orders" }
   after_create_commit -> { OwnerPushJob.perform_later(self) }
+  after_update_commit -> { broadcast_replace_to "incoming_orders" }
 
   # ponytail: leans on SQLite's single-writer transaction instead of row locks;
   # add `Product.lock` if this moves to Postgres/MySQL.
@@ -48,6 +50,10 @@ class Order < ApplicationRecord
       order
     end
   end
+
+  def next_status = NEXT_STATUS[status]
+
+  def open? = status.in?(%w[ placed packed ])
 
   def address_lines
     [ recipient_name, line1, line2, landmark, "#{city}, #{state} #{pincode}", "Phone: #{phone_number}" ].compact_blank

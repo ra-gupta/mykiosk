@@ -1,6 +1,6 @@
 <% quantity = cart[product.id.to_s].to_i %>
 <% if quantity.zero? %>
-  <%= button_to "Add", cart_item_path(product), method: :patch, params: { quantity: 1 }, class: "btn w-full" %>
+  <%= button_to "Add", cart_item_path(product), method: :patch, params: { quantity: 1 }, class: "btn-add" %>
 <% else %>
   <div class="flex items-center justify-between gap-1 rounded-xl bg-emerald-50 p-1">
     <%= button_to "−", cart_item_path(product), method: :patch, params: { quantity: quantity - 1 },

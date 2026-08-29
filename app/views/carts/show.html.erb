@@ -13,8 +13,8 @@
       <% products.each do |product| %>
         <% quantity = cart[product.id.to_s].to_i %>
         <div class="flex items-center gap-4 p-4">
-          <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-2xl">
-            <%= product.emoji %>
+          <div class="h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-slate-50">
+            <%= render "products/photo", product: product, classes: "h-14 w-14" %>
           </div>
           <div class="flex-1">
             <p class="font-semibold"><%= product.name %></p>

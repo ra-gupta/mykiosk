@@ -1,4 +1,4 @@
-<div class="card p-5" id="<%= dom_id(order) %>" data-controller="new-order"
+<div class="card flex flex-col p-5" id="<%= dom_id(order) %>" data-controller="new-order"
      data-new-order-title-value="New order #<%= order.id %> · <%= rupees(order.total) %>">
   <div class="flex items-center justify-between gap-3">
     <p class="font-semibold">Order #<%= order.id %></p>
@@ -9,11 +9,21 @@
 
   <ul class="mt-3 space-y-1 text-sm text-slate-600">
     <% order.order_items.each do |item| %>
-      <li><%= item.product.emoji %> <%= item.product.name %> × <%= item.quantity %></li>
+      <li><%= item.quantity %> × <%= item.product.name %></li>
     <% end %>
   </ul>
 
   <address class="mt-3 border-t border-slate-100 pt-3 text-xs not-italic text-slate-500">
     <%= order.address %>
   </address>
+
+  <div class="mt-4 flex flex-wrap gap-2">
+    <% if order.next_status %>
+      <%= button_to "Mark #{order.next_status.humanize.downcase}", owner_order_path(order, status: order.next_status),
+            method: :patch, class: "btn" %>
+    <% end %>
+    <% if order.open? %>
+      <%= button_to "Cancel", owner_order_path(order, status: "cancelled"), method: :patch, class: "btn-quiet" %>
+    <% end %>
+  </div>
 </div>

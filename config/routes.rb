@@ -5,7 +5,10 @@ Rails.application.routes.draw do
   resources :passwords, param: :token
 
   resources :products, only: :index
-  get "owner/orders", to: "owner#orders", as: :owner_orders
+  namespace :owner do
+    resources :products, except: :show
+    resources :orders, only: %i[ index update ]
+  end
   resources :orders, only: %i[ index show new create ]
 
   namespace :api do

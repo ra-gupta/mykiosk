@@ -3,9 +3,9 @@ require "application_system_test_case"
 class ShoppingTest < ApplicationSystemTestCase
   setup do
     @owner = User.create!(email_address: "owner@mykiosk.test", password: "kiosk1234", owner: true)
-    Product.create!(name: "Tomato", price: 30, unit: "kg", stock: 20)
-    Product.create!(name: "Spinach", price: 20, unit: "bunch", stock: 12)
-    Product.create!(name: "Carrot", price: 45, unit: "kg", stock: 0)
+    Product.create!(name: "Tomato", price: 30, mrp: 36, unit: "1 kg", stock: 20, image: "products/tomato.jpg")
+    Product.create!(name: "Spinach (Palak)", price: 20, mrp: 26, unit: "250 g", stock: 12, image: "products/spinach.jpg")
+    Product.create!(name: "Carrot", price: 45, mrp: 52, unit: "500 g", stock: 0, image: "products/carrot.jpg")
   end
 
   test "shopping with an OTP sign in, then the owner watching it arrive" do
@@ -43,6 +43,18 @@ class ShoppingTest < ApplicationSystemTestCase
     click_on "Incoming"
     assert_text "Indiranagar"
     shot "07-owner-incoming"
+
+    click_on "Mark packed"
+    click_on "Mark out for delivery"
+    assert_text "Out for delivery"
+    click_on "Mark delivered"
+    assert_text "Delivered"
+    shot "08-owner-delivered"
+
+    click_on "Shelf"
+    within("[data-product='Spinach (Palak)']") { click_on "Out of stock" }
+    assert_text "Out of stock"
+    shot "09-owner-shelf"
   end
 
   private
