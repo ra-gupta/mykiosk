@@ -9,7 +9,9 @@ Rails.application.routes.draw do
     resources :products, except: :show
     resources :orders, only: %i[ index update ]
   end
-  resources :orders, only: %i[ index show new create ]
+  resources :orders, only: %i[ index show new create ] do
+    post :reorder, on: :member
+  end
 
   namespace :api do
     namespace :v1 do

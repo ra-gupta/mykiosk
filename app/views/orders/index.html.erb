@@ -10,15 +10,16 @@
 
 <div class="space-y-3">
   <% @orders.each do |order| %>
-    <%= link_to order, class: "card flex items-center gap-4 p-4 transition hover:shadow-md" do %>
-      <div class="flex-1">
-        <p class="font-semibold">Order #<%= order.id %></p>
+    <div class="card flex flex-wrap items-center gap-4 p-4">
+      <div class="min-w-40 flex-1">
+        <%= link_to "Order ##{order.id}", order, class: "font-semibold text-slate-900 hover:underline" %>
         <p class="text-xs text-slate-500">
           <%= order.created_at.to_fs(:long) %> · <%= order.city %> · <%= order.delivery_promise %>
         </p>
       </div>
       <span class="pill"><%= order.status.humanize %></span>
       <span class="w-24 text-right font-semibold"><%= rupees(order.total) %></span>
-    <% end %>
+      <%= button_to "Reorder", reorder_order_path(order), class: "btn-quiet" %>
+    </div>
   <% end %>
 </div>

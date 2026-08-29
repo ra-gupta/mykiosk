@@ -10,7 +10,9 @@ class OrdersController < ApplicationController
   def new
     return redirect_to cart_path, alert: "Your basket is empty." if cart.empty?
 
-    @order = Order.new(phone_number: Current.user.phone_number, state: "Karnataka")
+    previous = Current.user.orders.last
+    @order = Order.new(previous&.slice(*Order::FIELDS) ||
+      { phone_number: Current.user.phone_number, state: "Karnataka" })
   end
 
   def create
@@ -20,6 +22,17 @@ class OrdersController < ApplicationController
   rescue ActiveRecord::RecordInvalid => e
     @order = e.record
     render :new, status: :unprocessable_entity
+  end
+
+  def reorder
+    order = Current.user.orders.find(params[:id])
+    session[:cart] = order.to_cart
+
+    if cart.empty?
+      redirect_to orders_path, alert: "Nothing from that order is in stock today."
+    else
+      redirect_to cart_path, notice: "Basket refilled from order ##{order.id}."
+    end
   end
 
   private

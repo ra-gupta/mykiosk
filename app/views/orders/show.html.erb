@@ -34,4 +34,7 @@
   </div>
 </div>
 
-<p class="mt-6"><%= link_to "All orders", orders_path, class: "btn-quiet" %></p>
+<div class="mt-6 flex gap-2">
+  <%= button_to "Reorder these items", reorder_order_path(@order), class: "btn" %>
+  <%= link_to "All orders", orders_path, class: "btn-quiet" %>
+</div>
