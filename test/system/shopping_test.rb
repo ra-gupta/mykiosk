@@ -21,10 +21,12 @@ class ShoppingTest < ApplicationSystemTestCase
     fill_in "phone_number", with: "9876543210"
     shot "03-sign-in"
     click_on "Send OTP"
+    assert_text "Enter the code" # the POST has to land before a new code is generated below
     shot "04-otp"
 
     fill_in "code", with: User.start_phone_verification("9876543210").otp
     click_on "Verify and continue"
+    assert_text "Sign out" # signed in, rather than bounced back to the code screen
 
     within("header") { click_on "Basket" }
     click_on "Checkout"
