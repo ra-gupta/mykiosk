@@ -60,7 +60,7 @@ class ShoppingTest < ApplicationSystemTestCase
     shot "08-owner-delivered"
 
     click_on "Shelf"
-    within("[data-product='Spinach (Palak)']") { click_on "Out of stock" }
+    within("[data-product='Spinach (Palak)']") { click_on "Mark out of stock" }
     assert_text "Out of stock"
     shot "09-owner-shelf"
   end

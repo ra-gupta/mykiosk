@@ -12,16 +12,18 @@
     <div class="card divide-y divide-slate-100 lg:col-span-2">
       <% products.each do |product| %>
         <% quantity = cart[product.id.to_s].to_i %>
-        <div class="flex items-center gap-4 p-4">
+        <div class="flex flex-wrap items-center gap-3 p-4 sm:gap-4">
           <div class="h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-slate-50">
             <%= render "products/photo", product: product, classes: "h-14 w-14" %>
           </div>
-          <div class="flex-1">
+          <div class="min-w-32 flex-1">
             <p class="font-semibold"><%= product.name %></p>
             <p class="text-xs text-slate-500"><%= rupees(product.price) %> per <%= product.unit %></p>
           </div>
-          <div class="w-28"><%= render "carts/stepper", product: product %></div>
-          <p class="w-20 text-right font-semibold"><%= rupees(product.price * quantity) %></p>
+          <div class="ml-auto flex items-center gap-3">
+            <div class="w-28"><%= render "carts/stepper", product: product %></div>
+            <p class="w-20 text-right font-semibold"><%= rupees(product.price * quantity) %></p>
+          </div>
         </div>
       <% end %>
     </div>
