@@ -31,9 +31,9 @@ class Order < ApplicationRecord
   validates :delivery_option, inclusion: { in: DELIVERY_OPTIONS.keys }
 
   after_create_commit -> { broadcast_prepend_to "incoming_orders", target: "incoming_orders" }
-  after_create_commit -> { OrderPushJob.perform_later(self, "owner") }
+  after_create_commit -> { OrderAlertJob.perform_later(self, "owner") }
   after_update_commit -> { broadcast_replace_to "incoming_orders" }
-  after_update_commit -> { OrderPushJob.perform_later(self, "customer") if saved_change_to_status? }
+  after_update_commit -> { OrderAlertJob.perform_later(self, "customer") if saved_change_to_status? }
 
   # ponytail: leans on SQLite's single-writer transaction instead of row locks;
   # add `Product.lock` if this moves to Postgres/MySQL.
