@@ -63,6 +63,23 @@ class OwnerTest < ActionDispatch::IntegrationTest
     assert_match %r{^http://.+/products/}, response.parsed_body["image_url"].to_s if @product.image.present?
   end
 
+  test "api: the owner puts a new item on the shelf, and the app knows the shop's name" do
+    post api_v1_session_path, params: { email_address: @owner.email_address, password: "secret123" }
+    headers = { "Authorization" => "Bearer #{response.parsed_body["token"]}" }
+
+    post api_v1_owner_products_path, headers: headers,
+      params: { product: { name: "Eggs", unit: "1 dozen", price: 84, mrp: 90, stock: 10 } }
+    assert_response :created
+    assert_equal [ "Eggs", "1 dozen", 7 ], response.parsed_body.values_at("name", "unit", "discount_percentage")
+
+    post api_v1_owner_products_path, headers: headers, params: { product: { name: "", price: 0 } }
+    assert_response :unprocessable_entity
+
+    get api_v1_shop_path
+    assert_equal "MyKiosk", response.parsed_body["name"]
+    assert_equal "In 30 minutes", response.parsed_body.dig("delivery_options", "instant")
+  end
+
   test "api: a shopper is refused the owner endpoints" do
     code = User.start_phone_verification(@shopper.phone_number).otp
     post api_v1_session_path, params: { phone_number: @shopper.phone_number, code: }
