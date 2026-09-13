@@ -60,6 +60,10 @@ class OrderingTest < ActionDispatch::IntegrationTest
 
     get api_v1_orders_path, headers: headers
     assert_equal 1, response.parsed_body.size
+    assert_equal "Tomato", response.parsed_body.dig(0, "items", 0, "name")
+
+    get api_v1_products_path
+    assert_equal %r{/assets/products/tomato}, response.parsed_body.sole["image_url"] if @tomato.image.present?
     get api_v1_orders_path
     assert_response :unauthorized
   end
