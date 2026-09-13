@@ -30,6 +30,7 @@ class Order < ApplicationRecord
   validates :status, inclusion: { in: STATUSES }
   validates :delivery_option, inclusion: { in: DELIVERY_OPTIONS.keys }
 
+  before_update :restore_stock, if: -> { status_changed?(to: "cancelled") }
   after_create_commit -> { broadcast_prepend_to "incoming_orders", target: "incoming_orders" }
   after_create_commit -> { OrderAlertJob.perform_later(self, "owner") }
   after_update_commit -> { broadcast_replace_to "incoming_orders" }
@@ -62,6 +63,8 @@ class Order < ApplicationRecord
   end
 
   def next_status = NEXT_STATUS[status]
+
+  def restore_stock = order_items.each { |item| item.product.increment!(:stock, item.quantity) }
 
   def delivery_promise = DELIVERY_OPTIONS[delivery_option]
 

@@ -21,6 +21,10 @@ Rails.application.routes.draw do
       resources :device_tokens, only: %i[ create destroy ]
       resources :products, only: :index
       resources :orders, only: %i[ index show create ]
+      namespace :owner do
+        resources :orders, only: %i[ index update ]
+        resources :products, only: :update
+      end
     end
   end
 

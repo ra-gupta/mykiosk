@@ -4,9 +4,9 @@ module Api
       skip_before_action :authenticate
 
       def index
-        products = Product.order(:name)
+        products = Product.with_attached_photo.order(:name)
         products = products.where("name LIKE ?", "%#{params[:q]}%") if params[:q].present?
-        render json: products.as_json(only: %i[ id name price unit stock ])
+        render json: products.map { |product| product_json(product) }
       end
     end
   end
