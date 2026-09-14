@@ -19,8 +19,13 @@ Rails.application.routes.draw do
       resource :registration, only: :create
       resource :phone_verification, only: :create
       resources :device_tokens, only: %i[ create destroy ]
+      resource :shop, only: :show, controller: :shop
       resources :products, only: :index
       resources :orders, only: %i[ index show create ]
+      namespace :owner do
+        resources :orders, only: %i[ index update ]
+        resources :products, only: %i[ create update ]
+      end
     end
   end
 
