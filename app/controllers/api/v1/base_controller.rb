@@ -2,7 +2,6 @@ module Api
   module V1
     # Android sends `Authorization: Bearer <token>` from POST /api/v1/session.
     class BaseController < ActionController::API
-      include Rails.application.routes.url_helpers
       before_action :authenticate
 
       private

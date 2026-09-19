@@ -36,9 +36,9 @@ class OrderAlertJobTest < ActiveJob::TestCase
     order = place_order
 
     assert_enqueued_with(job: OrderAlertJob, args: ->(args) { args.last == "customer" }) do
-      order.update!(status: "out_for_delivery")
+      order.update!(status: "packed")
     end
-    assert_equal "Your order is on the way.", Order::CUSTOMER_PUSH[order.status]
+    assert_equal "We are packing your order now.", Order::CUSTOMER_PUSH[order.status]
 
     assert_no_enqueued_jobs(only: OrderAlertJob) { order.update!(total: 31) }
 

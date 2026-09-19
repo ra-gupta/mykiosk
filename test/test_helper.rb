@@ -10,6 +10,12 @@ module ActiveSupport
     # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
     fixtures :all
 
+    # The code inside the last OTP text that was queued for sending.
+    def last_otp
+      job = ActiveJob::Base.queue_adapter.enqueued_jobs.reverse.find { |j| j["job_class"] == "SmsJob" }
+      job["arguments"].last[/\d{6}/]
+    end
+
     def address_attributes(overrides = {})
       { recipient_name: "Rahul Gupta", phone_number: "9876543210", pincode: "560038",
         line1: "Flat 4B, Green Residency", line2: "8th Cross, Indiranagar",

@@ -1,5 +1,10 @@
-owner = User.find_or_create_by!(email_address: "owner@mykiosk.test") do |user|
-  user.password = "kiosk1234"
+# The owner's password never lives in the repo: OWNER_PASSWORD in the
+# environment, or a development-only default that production refuses.
+owner = User.find_or_create_by!(email_address: ENV.fetch("OWNER_EMAIL", "owner@mykiosk.test")) do |user|
+  user.password = ENV.fetch("OWNER_PASSWORD") do
+    raise "Set OWNER_PASSWORD before seeding production" if Rails.env.production?
+    "kiosk1234"
+  end
   user.phone_number = "9000000001"
 end
 owner.update!(owner: true)

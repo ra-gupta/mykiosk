@@ -1,5 +1,6 @@
 class User < ApplicationRecord
   OTP_VALIDITY = 5.minutes
+  OTP_RESEND_AFTER = 1.minute
 
   has_secure_password validations: false
   has_secure_password :otp, validations: false
@@ -29,8 +30,12 @@ class User < ApplicationRecord
     end
   end
 
+  # A code already on its way is not re-sent for a minute, so a stranger
+  # hammering the endpoint can't run up the SMS bill on someone's number.
   def self.start_phone_verification(phone_number)
     user = find_or_initialize_by(phone_number: normalize_value_for(:phone_number, phone_number))
+    return user if user.otp_sent_at&.after?(OTP_RESEND_AFTER.ago)
+
     user.otp = format("%06d", SecureRandom.random_number(1_000_000))
     user.otp_sent_at = Time.current
     user.save!
@@ -46,7 +51,7 @@ class User < ApplicationRecord
   end
 
   def deliver_otp
-    SmsJob.perform_later(phone_number, "#{otp} is your MyKiosk code. It expires in 5 minutes.")
+    SmsJob.perform_later(phone_number, "#{otp} is your #{Shop.name} code. It expires in 5 minutes.")
   end
 
   def display_name = email_address.presence || phone_number

@@ -3,7 +3,7 @@ module Owner
     before_action :set_product, only: %i[ edit update destroy ]
 
     def index
-      @products = Product.order(:name)
+      @products = Product.with_attached_photo.order(:name)
     end
 
     def new
@@ -27,8 +27,11 @@ module Owner
     end
 
     def destroy
-      @product.destroy!
-      redirect_to owner_products_path, notice: "#{@product.name} removed."
+      if @product.destroy
+        redirect_to owner_products_path, notice: "#{@product.name} removed."
+      else
+        redirect_to owner_products_path, alert: "#{@product.name} has been ordered before — mark it out of stock instead."
+      end
     end
 
     private
