@@ -14,7 +14,7 @@ class OrderAlertJob < ApplicationJob
         body: "#{rupees(order.total)} · #{order.delivery_promise}", data: { order_id: order.id })
 
       User.owners_with_phone.each do |owner|
-        SmsJob.perform_later(owner.phone_number, "MyKiosk: new order ##{order.id} for #{rupees(order.total)}, " \
+        SmsJob.perform_later(owner.phone_number, "#{Shop.name}: new order ##{order.id} for #{rupees(order.total)}, " \
           "#{order.delivery_promise.downcase}, to #{order.recipient_name} in #{order.city}.")
       end
     end

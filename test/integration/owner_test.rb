@@ -60,7 +60,26 @@ class OwnerTest < ActionDispatch::IntegrationTest
 
     patch api_v1_owner_product_path(@product), headers: headers, params: { product: { stock: 0 } }
     assert_equal 0, @product.reload.stock
-    assert_match %r{^http://.+/products/}, response.parsed_body["image_url"].to_s if @product.image.present?
+
+    patch api_v1_owner_order_path(@order), headers: headers, params: { status: "placed" }
+    assert_response :unprocessable_entity
+    assert_match(/can't go from packed to placed/, response.parsed_body["errors"].to_sentence)
+  end
+
+  test "api: a product's photo comes back as a full URL" do
+    @product.photo.attach(io: StringIO.new("not really a jpeg"), filename: "tomato.jpg", content_type: "image/jpeg")
+
+    get api_v1_products_path
+    assert_match %r{\Ahttp://www\.example\.com/rails/active_storage/}, response.parsed_body.sole["image_url"]
+  end
+
+  test "web: the owner is told when a move isn't allowed instead of getting a 500" do
+    sign_in_as @owner
+
+    patch owner_order_path(@order, status: "delivered")
+    assert_redirected_to owner_orders_path
+    assert_match(/can't go from placed to delivered/, flash[:alert])
+    assert_equal "placed", @order.reload.status
   end
 
   test "api: the owner puts a new item on the shelf, and the app knows the shop's name" do

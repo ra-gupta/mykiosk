@@ -28,7 +28,7 @@ module Fcm
           "Content-Type" => "application/json", "Authorization" => "Bearer #{access_token}")
 
         Rails.logger.warn("FCM #{response.code}: #{response.body}") unless response.is_a?(Net::HTTPSuccess)
-        DeviceToken.where(token:).delete_all if response.code.to_i.in?([ 404, 400 ])
+        DeviceToken.where(token:).delete_all if response.code.to_i == 404 # UNREGISTERED: the app was removed
       end
 
       def access_token

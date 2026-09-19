@@ -11,7 +11,7 @@ class AuthenticationTest < ActionDispatch::IntegrationTest
     follow_redirect!
     assert_select "h1", "Enter the code"
 
-    post session_path, params: { phone_number: user.phone_number, code: User.start_phone_verification("9876543210").otp }
+    post session_path, params: { phone_number: user.phone_number, code: last_otp }
     assert_redirected_to root_path
     assert_nil user.reload.otp_digest
 
@@ -44,7 +44,7 @@ class AuthenticationTest < ActionDispatch::IntegrationTest
     post api_v1_phone_verification_path, params: { phone_number: "9876543210" }
     assert_response :created
 
-    post api_v1_session_path, params: { phone_number: "9876543210", code: User.start_phone_verification("9876543210").otp }
+    post api_v1_session_path, params: { phone_number: "9876543210", code: last_otp }
     assert_response :created
 
     post api_v1_device_tokens_path, params: { token: "fcm-abc" },

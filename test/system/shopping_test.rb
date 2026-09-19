@@ -24,7 +24,7 @@ class ShoppingTest < ApplicationSystemTestCase
     assert_text "Enter the code" # the POST has to land before a new code is generated below
     shot "04-otp"
 
-    fill_in "code", with: User.start_phone_verification("9876543210").otp
+    fill_in "code", with: last_otp
     click_on "Verify and continue"
     assert_text "Sign out" # signed in, rather than bounced back to the code screen
 

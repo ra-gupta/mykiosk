@@ -6,9 +6,12 @@ module Owner
 
     def update
       order = Order.find(params[:id])
-      order.update!(status: params[:status])
 
-      redirect_to owner_orders_path, notice: "Order ##{order.id} is #{order.status.humanize.downcase}."
+      if order.update(status: params[:status])
+        redirect_to owner_orders_path, notice: "Order ##{order.id} is #{order.status.humanize.downcase}."
+      else
+        redirect_to owner_orders_path, alert: order.errors.full_messages.to_sentence
+      end
     end
   end
 end

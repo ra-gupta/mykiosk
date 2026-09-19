@@ -6,7 +6,7 @@ module Api
       skip_before_action :authenticate
 
       def show
-        render json: { name: ENV.fetch("SHOP_NAME", "MyKiosk"), delivery_options: Order::DELIVERY_OPTIONS }
+        render json: { name: Shop.name, delivery_options: Order::DELIVERY_OPTIONS }
       end
     end
   end
