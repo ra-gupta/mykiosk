@@ -5,7 +5,7 @@ gem "sqlite3", ">= 2.1"
 gem "puma", ">= 5.0"
 
 gem "propshaft"
-gem "tailwindcss-rails", "~> 4.6"
+gem "tailwindcss-rails", "~> 4.7"
 gem "importmap-rails"
 gem "turbo-rails"
 gem "stimulus-rails"
